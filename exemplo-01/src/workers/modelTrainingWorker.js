@@ -3,6 +3,7 @@ import { workerEvents } from '../events/constants.js';
 
 console.log('Model training worker initialized');
 let _globalCtx = {};
+let _model = {}
 const WEIGHTS = {
     category: 0.4,
     color: 0.3,
@@ -124,21 +125,22 @@ function createTrainingData(context) {
     const inputs = [];
     const labels = [];
 
-    context.users.forEach(user => {
-        const userVector = encodeUser(user, context).dataSync();
+    context.users
+        .forEach(user => {
+            const userVector = encodeUser(user, context).dataSync();
 
-        context.products.forEach(product => {
-            const productVector = encodeProduct(product, context).dataSync();
+            context.products.forEach(product => {
+                const productVector = encodeProduct(product, context).dataSync();
 
-            const label = user.purchases.some(
-                purchase => purchase.name === product.name ? 1 : 0
-            )
+                const label = user.purchases.some(
+                    purchase => purchase.name === product.name ? 1 : 0
+                )
 
-            inputs.push([...userVector, ...productVector]);
-            labels.push(label);
+                inputs.push([...userVector, ...productVector]);
+                labels.push(label);
+            })
+
         })
-
-    })
 
     return {
         xs: tf.tensor2d(inputs),
@@ -148,7 +150,63 @@ function createTrainingData(context) {
     }
 }
 
-async function trainModel({ users }) {
+async function configureNeuralNetAndTrain(trainData) {
+    const model = tf.sequential()
+
+    model.add(
+        tf.layers.dense({
+            inputShape: [trainData.inputDimension],
+            units: 128,
+            activation: 'relu'
+        })
+    )
+
+    model.add(
+        tf.layers.dense({
+            units: 64,
+            activation: 'relu'
+        })
+    )
+    
+    model.add(
+        tf.layers.dense({
+            units: 32,
+            activation: 'relu'
+        })
+    )
+
+    model.add(
+        tf.layers.dense({
+            units: 1,
+            activation: 'sigmoid'
+        })
+    )
+
+    model.compile({
+        optimizer: tf.train.adam(0.01),
+        loss: 'binaryCrossentropy',
+        metrics: ['accuracy']
+    })
+
+    await model.fit(trainData.xs, trainData.ys, {
+        epochs: 100,
+        batchSize: 32,
+        shuffle: true,
+        callbacks: {
+            onEpochEnd: (epoch, logs) => {
+                postMessage({
+                    type: workerEvents.trainingLog,
+                    epoch: epoch,
+                    loss: logs.loss,
+                    accuracy: logs.acc
+                });
+            }
+        }
+    });
+}
+
+async function trainModel({ users: originalUsers }) {
+    const users = originalUsers.filter(u => u.purchases.length)
     console.log('Training model with users:', users)
 
     postMessage({ type: workerEvents.progressUpdate, progress: { progress: 50 } });
@@ -164,22 +222,13 @@ async function trainModel({ users }) {
     _globalCtx = context;
 
     const trainData = createTrainingData(context);
-    debugger
 
-    postMessage({
-        type: workerEvents.trainingLog,
-        epoch: 1,
-        loss: 1,
-        accuracy: 1
-    });
+    _model = await configureNeuralNetAndTrain(trainData);
 
-    setTimeout(() => {
-        postMessage({ type: workerEvents.progressUpdate, progress: { progress: 100 } });
-        postMessage({ type: workerEvents.trainingComplete });
-    }, 1000);
-
-
+    postMessage({ type: workerEvents.progressUpdate, progress: { progress: 100 } });
+    postMessage({ type: workerEvents.trainingComplete });
 }
+
 function recommend(user, ctx) {
     console.log('will recommend for user:', user)
     // postMessage({
