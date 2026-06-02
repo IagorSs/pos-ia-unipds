@@ -119,6 +119,17 @@ function encodeUser(user, context) {
             context.dimensions
         ])
     }
+
+    return tf.concat1d(
+        [
+            tf.zeros([1]),
+            tf.tensor1d([
+                normalize(user.age, context.minAge, context.maxAgr) * WEIGHTS.age
+            ]),
+            tf.zeros([context.numCategories]),
+            tf.zeros([context.numColors]),
+        ]
+    ).reshape([1, context.dimensions])
 }
 
 function createTrainingData(context) {
@@ -205,8 +216,7 @@ async function configureNeuralNetAndTrain(trainData) {
     });
 }
 
-async function trainModel({ users: originalUsers }) {
-    const users = originalUsers.filter(u => u.purchases.length)
+async function trainModel({ users }) {
     console.log('Training model with users:', users)
 
     postMessage({ type: workerEvents.progressUpdate, progress: { progress: 50 } });
