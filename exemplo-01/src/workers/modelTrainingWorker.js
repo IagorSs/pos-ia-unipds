@@ -3,7 +3,7 @@ import { workerEvents } from '../events/constants.js';
 
 console.log('Model training worker initialized');
 let _globalCtx = {};
-let _model = {}
+let _model = null
 const WEIGHTS = {
     category: 0.4,
     color: 0.3,
@@ -214,6 +214,8 @@ async function configureNeuralNetAndTrain(trainData) {
             }
         }
     });
+
+    return model;
 }
 
 async function trainModel({ users }) {
@@ -240,12 +242,44 @@ async function trainModel({ users }) {
 }
 
 function recommend(user, ctx) {
-    console.log('will recommend for user:', user)
-    // postMessage({
-    //     type: workerEvents.recommend,
-    //     user,
-    //     recommendations: []
-    // });
+    if(!_model) return;
+
+    const context = _globalCtx;
+
+    const userVector = encodeUser(user, context).dataSync();
+
+    /**
+     * Em aplicações reais: armazene todos os vetores de produtos em um banco de dados
+     * vetorial (como postgres (com plugin de vetores), neo4j ou pinecone)
+     * Exemplo de consulta: busca os 200 produtos mais próximos do vetor do usuário
+     * e executa predição apenas nesses
+     */
+
+    // Vai bater os dados do usuário com o de cada produto, pra no final dar um 
+    // score de compatibilidade c cada produto
+    const input = context.productVectors.map(({ vector }) => {
+        return [ ...userVector, ...vector ];
+    });
+    
+    const inputTensor = tf.tensor2d(input);
+    const predictions = _model.predict(inputTensor);
+
+    const scores = predictions.dataSync();
+    const recommendations = context.productVectors.map((item, index) => {
+        return {
+            ...item.meta,
+            name: item.name,
+            score: scores[index]
+        }
+    });
+
+    const sortedItems = recommendations.sort((a, b) => b.score - a.score);
+
+    postMessage({
+        type: workerEvents.recommend,
+        user,
+        recommendations: sortedItems
+    });
 }
 
 
