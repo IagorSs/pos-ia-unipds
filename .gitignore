@@ -4,4 +4,9 @@ node_modules/
 # NPM
 package-lock.json
 
+# Build
 dist/
+
+# Env
+.env*
+!.env.example
