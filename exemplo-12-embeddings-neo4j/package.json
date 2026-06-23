@@ -13,7 +13,7 @@
   "license": "MIT",
   "description": "",
   "engines": {
-    "node": "v22.13.1"
+    "node": "^22"
   },
   "type": "module",
   "dependencies": {
