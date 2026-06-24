@@ -3,7 +3,9 @@ import { CONFIG } from "./config.ts";
 import { DocumentProcessor } from "./documentProcessor.ts";
 import { type PretrainedOptions } from "@huggingface/transformers";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
-import { displayResults } from "./util.ts";
+import { ChatOpenAI } from "@langchain/openai";
+import { AI } from "./ai.ts";
+import { mkdir, writeFile } from 'node:fs/promises';
 
 let _neo4jVectorStore = null;
 
@@ -29,6 +31,17 @@ try {
         pretrainedOptions: CONFIG.embedding.pretrainedOptions as PretrainedOptions
     });
 
+    const nlpModel = new ChatOpenAI({
+        temperature: CONFIG.openRouter.temperature,
+        maxRetries: CONFIG.openRouter.maxRetries,
+        model: CONFIG.openRouter.nlpModel,
+        openAIApiKey: CONFIG.openRouter.apiKey,
+        configuration: {
+            baseURL: CONFIG.openRouter.url,
+            defaultHeaders: CONFIG.openRouter.defaultHeaders
+        }
+    });
+
     _neo4jVectorStore = await Neo4jVectorStore.fromExistingGraph(
         embeddings,
         CONFIG.neo4j
@@ -45,6 +58,7 @@ try {
 
     console.log("ETAPA 2: Executando buscas por similaridade...");
     const questions = [
+        "Me fale sobre pinguins?",
         "O que são tensores e como são representados em JavaScript",
         "Como converter objetos JavaScript em tensores?",
         "O que é normalização de dados e por que é necessária?",
@@ -53,17 +67,34 @@ try {
         "O que é hot enconding e quando usar?"
     ]
 
-    for (const question of questions) {
+    const ai = new AI({
+        nlpModel,
+        debugLog: console.log,
+        vectorStore: _neo4jVectorStore,
+        promptConfig: CONFIG.promptConfig,
+        templateText: CONFIG.templateText,
+        topK: CONFIG.similarity.topK
+    });
+
+    for (const index in questions) {
+        const question = questions[index]!;
         console.log(`\n${'='.repeat(80)}`);
         console.log(`Pergunta: ${question}`);
         console.log('='.repeat(80));
 
-        const result = await _neo4jVectorStore.similaritySearch(
-            question,
-            CONFIG.similarity.topK
-        );
+        const result = await ai.answerQuestion(question);
 
-        displayResults(result);
+        if (result.error) {
+            console.error(`\n Erro: ${result.error}\n`);
+            continue;
+        }
+
+        console.log("Resposta: ");
+        console.log(result.answer);
+
+        await mkdir(CONFIG.output.answersFolder, { recursive: true });
+        const fileName = `${CONFIG.output.answersFolder}/${CONFIG.output.fileName}-${index}-${Date.now()}.md`;
+        await writeFile(fileName, result.answer!);
     }
 } catch (error) {
     console.error('error', error);

@@ -1,9 +1,23 @@
+import { readFileSync } from 'node:fs';
+
 export interface TextSplitterConfig {
     chunkSize: number;
     chunkOverlap: number;
 }
 
+const promptFolder = './prompts';
+const promptsFiles = {
+    answerPrompt: `${promptFolder}/answerPrompt.json`,
+    template: `${promptFolder}/template.txt`,
+}
+
 export const CONFIG = Object.freeze({
+    promptConfig: JSON.parse(readFileSync(promptsFiles.answerPrompt, 'utf-8')),
+    templateText: readFileSync(promptsFiles.template, 'utf-8'),
+    output: {
+        answersFolder: './respostas',
+        fileName: 'resposta',
+    },
     neo4j: {
         url: process.env.NEO4J_URI!,
         username: process.env.NEO4J_USER!,

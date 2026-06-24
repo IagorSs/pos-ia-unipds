@@ -5,8 +5,8 @@ import type { TextSplitterConfig } from './config.ts';
 
 export class DocumentProcessor {
     constructor(
-        private pdfPath: string,
-        private textSplitterConfig: TextSplitterConfig
+        private readonly pdfPath: string,
+        private readonly textSplitterConfig: TextSplitterConfig
     ) { }
 
     async loadAndSplit() {
