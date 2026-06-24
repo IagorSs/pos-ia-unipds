@@ -28,6 +28,8 @@ export class AI {
     ) {}
 
     async retrieveVectorSearchResults(input: ChainState): Promise<ChainState> {
+        const MINIMAL_SCORE_ACCEPTABLE = 0.8;
+
         this.params.debugLog("Buscando no vector store do Neo4j...");
         const vectorResults = await this.params.vectorStore.similaritySearchWithScore(input.question, this.params.topK);
 
@@ -44,7 +46,7 @@ export class AI {
         const topScore = vectorResults[0]![1];
         this.params.debugLog(`Encontrados ${vectorResults.length} resultados relevantes (melhor score: ${topScore.toFixed(3)})`);
 
-        if (topScore <= 0.5) {
+        if (topScore <= MINIMAL_SCORE_ACCEPTABLE) {
             this.params.debugLog("Resultados de baixo score encontrados no vector store.");
             return {
                 ...input,
@@ -53,7 +55,7 @@ export class AI {
         }
 
         const contexts = vectorResults
-            .filter(([, score]) => score > 0.5)
+            .filter(([, score]) => score > MINIMAL_SCORE_ACCEPTABLE)
             .map(([doc]) => doc.pageContent)
             .join("\n\n---\n\n");
 
