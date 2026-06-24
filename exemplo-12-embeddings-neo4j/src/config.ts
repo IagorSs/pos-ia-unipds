@@ -1,5 +1,3 @@
-import type { DataType, PretrainedModelOptions } from "@huggingface/transformers";
-
 export interface TextSplitterConfig {
     chunkSize: number;
     chunkOverlap: number;
@@ -36,8 +34,9 @@ export const CONFIG = Object.freeze({
     embedding: {
         modelName: process.env.EMBEDDING_MODEL!,
         pretrainedOptions: {
-            dtype: "fp32" as DataType, // Options: 'fp32' (best quality), 'fp16' (faster), 'q8', 'q4', 'q4f16' (quantized)
-        } satisfies PretrainedModelOptions,
+            // Options: 'fp32' (best quality), 'fp16' (faster), 'q8', 'q4', 'q4f16' (quantized)
+            dtype: "fp32"
+        },
     },
     similarity: {
         topK: 3,
