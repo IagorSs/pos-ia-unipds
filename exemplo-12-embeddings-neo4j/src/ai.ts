@@ -22,18 +22,18 @@ interface ChainState {
     answer?: string;
 }
 
+const insufficientInfoErrorMessage = "Desculpe, não encontrei informações relevantes sobre essa pergunta na base de conhecimento";
+
 export class AI {
     constructor(
         private readonly params: Params
     ) {}
 
     async retrieveVectorSearchResults(input: ChainState): Promise<ChainState> {
-        const MINIMAL_SCORE_ACCEPTABLE = 0.8;
+        const MINIMAL_SCORE_ACCEPTABLE = 0.5;
 
         this.params.debugLog("Buscando no vector store do Neo4j...");
         const vectorResults = await this.params.vectorStore.similaritySearchWithScore(input.question, this.params.topK);
-
-        const insufficientInfoErrorMessage = "Desculpe, não encontrei informações relevantes sobre essa pergunta na base de conhecimento";
 
         if (!vectorResults.length) {
             this.params.debugLog("Nenhum resultado encontrado no vector store.");
@@ -90,6 +90,11 @@ export class AI {
             question: input.question,
             context: input.context
         });
+
+        if (rawResponse === 'INSUFFICIENT_INFO') return {
+            ...input,
+            error: insufficientInfoErrorMessage
+        };
 
         return {
             ...input,
