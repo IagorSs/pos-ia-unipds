@@ -14,6 +14,7 @@ const promptsFiles = {
 export const CONFIG = Object.freeze({
     promptConfig: JSON.parse(readFileSync(promptsFiles.answerPrompt, 'utf-8')),
     templateText: readFileSync(promptsFiles.template, 'utf-8'),
+    repopulateEmbeddings: JSON.parse(process.env.REPOPULATE_EMBEDDINGS!) as boolean,
     output: {
         answersFolder: './respostas',
         fileName: 'resposta',

@@ -33,11 +33,15 @@ try {
         CONFIG.neo4j
     );
     
-    await clearAll(_neo4jVectorStore, CONFIG.neo4j.nodeLabel);
-
-    for (const [index, doc] of documents.entries()) {
-        console.log(`Adicionando documento ${index +1}/${documents.length}`);
-        await _neo4jVectorStore.addDocuments([doc]);
+    if (CONFIG.repopulateEmbeddings) {
+        await clearAll(_neo4jVectorStore, CONFIG.neo4j.nodeLabel);
+    
+        for (const [index, doc] of documents.entries()) {
+            console.log(`Adicionando documento ${index +1}/${documents.length}`);
+            await _neo4jVectorStore.addDocuments([doc]);
+        }
+    
+        console.log("Base de dados populada com sucesso");
     }
 
     const nlpModel = new ChatOpenAI({
@@ -50,8 +54,6 @@ try {
             defaultHeaders: CONFIG.openRouter.defaultHeaders
         }
     });
-
-    console.log("Base de dados populada com sucesso")
 
     console.log("ETAPA 2: Executando buscas por similaridade...");
     const questions = [
