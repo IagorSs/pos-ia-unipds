@@ -28,8 +28,7 @@ export const CONFIG = Object.freeze({
         nodeLabel: "Chunk",
     },
     openRouter: {
-        nlpModel: process.env.NLP_MODEL,
-        url: "https://openrouter.ai/api/v1",
+        url: process.env.OPENROUTER_API_URL,
         apiKey: process.env.OPENROUTER_API_KEY,
         temperature: 0.3,
         maxRetries: 2,
@@ -45,11 +44,16 @@ export const CONFIG = Object.freeze({
         chunkSize: 1000,
         chunkOverlap: 200,
     },
-    embedding: {
-        modelName: process.env.EMBEDDING_MODEL!,
-        pretrainedOptions: {
-            // Options: 'fp32' (best quality), 'fp16' (faster), 'q8', 'q4', 'q4f16' (quantized)
-            dtype: "fp32"
+    ais: {
+        nlp: {
+            modelName: process.env.NLP_MODEL,
+        },
+        embedding: {
+            modelName: process.env.EMBEDDING_MODEL!,
+            pretrainedOptions: {
+                // Options: 'fp32' (best quality), 'fp16' (faster), 'q8', 'q4', 'q4f16' (quantized)
+                dtype: "fp32"
+            },
         },
     },
     similarity: {

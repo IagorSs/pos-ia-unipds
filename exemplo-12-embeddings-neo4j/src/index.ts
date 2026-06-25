@@ -1,11 +1,10 @@
-import { HuggingFaceTransformersEmbeddings } from "@langchain/community/embeddings/huggingface_transformers";
-import { CONFIG } from "./config.ts";
-import { DocumentProcessor } from "./documentProcessor.ts";
-import { type PretrainedOptions } from "@huggingface/transformers";
 import { Neo4jVectorStore } from "@langchain/community/vectorstores/neo4j_vector";
 import { ChatOpenAI } from "@langchain/openai";
-import { AI } from "./ai.ts";
 import { mkdir, writeFile } from 'node:fs/promises';
+import { AI } from "./ai.ts";
+import { CONFIG } from "./config.ts";
+import { DocumentProcessor } from "./documentProcessor.ts";
+import { NvidiaEmbeddingModel } from "./NvidiaEmbeddingModel.ts";
 
 let _neo4jVectorStore = null;
 
@@ -26,33 +25,31 @@ try {
     );
 
     const documents = await documentProcessor.loadAndSplit();
-    const embeddings = new HuggingFaceTransformersEmbeddings({
-        model: CONFIG.embedding.modelName,
-        pretrainedOptions: CONFIG.embedding.pretrainedOptions as PretrainedOptions
-    });
 
-    const nlpModel = new ChatOpenAI({
-        temperature: CONFIG.openRouter.temperature,
-        maxRetries: CONFIG.openRouter.maxRetries,
-        model: CONFIG.openRouter.nlpModel,
-        openAIApiKey: CONFIG.openRouter.apiKey,
-        configuration: {
-            baseURL: CONFIG.openRouter.url,
-            defaultHeaders: CONFIG.openRouter.defaultHeaders
-        }
-    });
+    const embeddings = new NvidiaEmbeddingModel();
 
     _neo4jVectorStore = await Neo4jVectorStore.fromExistingGraph(
         embeddings,
         CONFIG.neo4j
     );
-
+    
     await clearAll(_neo4jVectorStore, CONFIG.neo4j.nodeLabel);
 
     for (const [index, doc] of documents.entries()) {
         console.log(`Adicionando documento ${index +1}/${documents.length}`);
         await _neo4jVectorStore.addDocuments([doc]);
     }
+
+    const nlpModel = new ChatOpenAI({
+        temperature: CONFIG.openRouter.temperature,
+        maxRetries: CONFIG.openRouter.maxRetries,
+        model: CONFIG.ais.nlp.modelName,
+        openAIApiKey: CONFIG.openRouter.apiKey,
+        configuration: {
+            baseURL: CONFIG.openRouter.url,
+            defaultHeaders: CONFIG.openRouter.defaultHeaders
+        }
+    });
 
     console.log("Base de dados populada com sucesso")
 
