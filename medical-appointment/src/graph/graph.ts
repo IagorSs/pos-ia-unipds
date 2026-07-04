@@ -48,7 +48,7 @@ export function buildAppointmentGraph(
   })
     .addNode('identifyIntent', createIdentifyIntentNode(llmClient))
     .addNode('schedule', createSchedulerNode(appointmentService))
-    .addNode('cancel', createCancellerNode())
+    .addNode('cancel', createCancellerNode(appointmentService))
     .addNode('message', createMessageGeneratorNode())
 
     // Flow
