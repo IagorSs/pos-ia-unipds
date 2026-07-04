@@ -47,7 +47,7 @@ export function buildAppointmentGraph(
     stateSchema: AppointmentStateAnnotation,
   })
     .addNode('identifyIntent', createIdentifyIntentNode(llmClient))
-    .addNode('schedule', createSchedulerNode())
+    .addNode('schedule', createSchedulerNode(appointmentService))
     .addNode('cancel', createCancellerNode())
     .addNode('message', createMessageGeneratorNode())
 
