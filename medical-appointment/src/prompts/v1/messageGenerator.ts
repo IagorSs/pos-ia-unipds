@@ -27,7 +27,10 @@ export const getSystemPrompt = () => {
   });
 };
 
-export const getUserPromptTemplate = (data: any) => {
+export const getUserPromptTemplate = (data: {
+  scenario: string,
+  details: any
+}) => {
   return JSON.stringify({
     scenario: data.scenario,
     details: data.details,
