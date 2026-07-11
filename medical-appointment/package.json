@@ -37,6 +37,7 @@
     "node": ">=24.10.0"
   },
   "allowScripts": {
-    "@openrouter/sdk@0.5.1": true
+    "@openrouter/sdk@0.5.1": true,
+    "esbuild@0.28.1": true
   }
 }
