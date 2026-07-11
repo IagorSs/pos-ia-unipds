@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    container_name: postgres
+    container_name: song-highlights-db
     restart: always
     image: postgres
     ports:
@@ -18,3 +18,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
+    networks:
+      - pos-ia-network
+
+networks:
+  pos-ia-network:
+    external: true
