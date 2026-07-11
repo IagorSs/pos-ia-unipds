@@ -9,7 +9,7 @@
     "chat:ana": "node --experimental-strip-types --env-file .env src/index.ts --user ana",
     "test": "node --experimental-strip-types --env-file .env --test tests/**/*.test.ts",
     "test:watch": "node --experimental-strip-types --env-file .env --test --watch tests/**/*.test.ts",
-    "langgraph:serve": "npx @langchain/langgraph-cli dev"
+    "langgraph:serve": "npx @langchain/langgraph-cli dev --host 0.0.0.0 --no-browser"
   },
   "keywords": [
     "langchain",
