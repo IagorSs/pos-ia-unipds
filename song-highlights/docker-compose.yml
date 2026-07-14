@@ -3,7 +3,6 @@ version: '3.8'
 services:
   postgres:
     container_name: song-highlights-db
-    restart: always
     image: postgres
     ports:
       - 5432:5432
