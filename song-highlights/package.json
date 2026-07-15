@@ -7,7 +7,8 @@
   "scripts": {
     "chat:erickwendel": "node --experimental-strip-types --env-file .env src/index.ts --user erickwendel",
     "chat:ana": "node --experimental-strip-types --env-file .env src/index.ts --user ana",
-    "test": "node --experimental-strip-types --env-file .env --test --inspect-wait=0.0.0.0:9978 tests/**/*.test.ts",
+    "test": "node --experimental-strip-types --env-file .env --test tests/**/*.test.ts",
+    "test:debug": "node --experimental-strip-types --env-file .env --test --inspect-wait=0.0.0.0:9978 tests/**/*.test.ts",
     "langgraph:serve": "npx @langchain/langgraph-cli dev --host 0.0.0.0 --no-browser"
   },
   "keywords": [
