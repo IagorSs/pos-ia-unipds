@@ -35,8 +35,8 @@ export function buildChatGraph(
   memoryService: MemoryService
 ) {
   const graph = new StateGraph(ChatStateAnnotation)
-    .addNode('chat', createChatNode(llmClient))
-    .addNode('savePreferences', createSavePreferencesNode())
+    .addNode('chat', createChatNode(llmClient, preferencesService))
+    .addNode('savePreferences', createSavePreferencesNode(preferencesService))
     .addNode('summarize', createSummarizationNode(llmClient))
 
     .addEdge(START, 'chat')
