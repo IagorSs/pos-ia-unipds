@@ -1,0 +1,13 @@
+name: safeguard-prompt-injection
+
+services:
+  app:
+    build:
+      context: ./docker
+      dockerfile: app.Dockerfile
+    container_name: safeguard-prompt-injection-env
+    volumes:
+      - .:/safeguard-prompt-injection
+    ports:
+      - 2024:2024
+      - 9978:9978
