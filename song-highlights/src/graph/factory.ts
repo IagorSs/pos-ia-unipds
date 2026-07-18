@@ -18,11 +18,7 @@ export async function buildGraph(dbPath: string = './preferences.db') {
 
   return {
     graph,
-    memoryService: {
-      store: {
-        search: (arg1: any, arg2: any) => Promise.resolve([])
-      }
-    },
+    memoryService,
   };
 }
 
