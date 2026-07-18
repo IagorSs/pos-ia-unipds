@@ -34,12 +34,15 @@ export function createChatNode(llmClient: OpenRouterService) {
 
     const response = result.data;
 
+    const totalMessages = state.messages.length;
+    const needsSummarization = totalMessages >= 6;
+
     return {
       messages: [
         new AIMessage(response.message)
       ],
       extractedPreferences: response.shouldSavePreferences ? response.preferences: undefined,
-      needsSummarization: false,
+      needsSummarization,
     };
   };
 }
