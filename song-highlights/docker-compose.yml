@@ -1,26 +1,30 @@
 version: '3.8'
+name: song-highlights
 
 services:
-  postgres:
-    container_name: song-highlights-db
-    image: postgres
+  db:
+    container_name: ${DB_HOST:?error}
+    image: postgres:18
     ports:
-      - 5432:5432
+      - ${DB_PORT:?error}:5432
     environment:
-      POSTGRES_PASSWORD: mysecretpassword
-      POSTGRES_DB: song_recommender
+      POSTGRES_PASSWORD: ${DB_PASS:?error}
+      POSTGRES_DB: ${DB_NAME:?error}
     volumes:
-        - "./dbdata:/var/lib/postgresql"
-
+        - "./docker/dbdata:/var/lib/postgresql"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-    networks:
-      - pos-ia-network
-
-networks:
-  pos-ia-network:
-    external: true
+  app:
+    build:
+      context: ./docker
+      dockerfile: app.Dockerfile
+    container_name: node-24
+    volumes:
+      - .:/song-highlights
+    ports:
+      - 2024:2024
+      - 9978:9978

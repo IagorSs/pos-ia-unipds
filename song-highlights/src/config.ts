@@ -38,7 +38,7 @@ export const config: ModelConfig = {
   },
   temperature: 0.7,
   memory: {
-    dbUri: 'postgresql://postgres:mysecretpassword@localhost:5432/song_recommender',
+    dbUri: `postgresql://postgres:${process.env.DB_PASS}@${process.env.DB_HOST}:5432/${process.env.DB_NAME}`,
   },
   maxMessagesToSummary: 6
 };

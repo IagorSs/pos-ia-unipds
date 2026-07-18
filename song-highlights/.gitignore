@@ -1,4 +1,3 @@
-dbdata/
 node_modules/
 dist/
 .env
@@ -9,3 +8,7 @@ outputs/
 
 # LangGraph API
 .langgraph_api
+
+# DB
+dbdata/
+*.db
