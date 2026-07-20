@@ -2,6 +2,7 @@ import { ChatOpenAI } from '@langchain/openai';
 import { config, type ModelConfig } from '../config.ts';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 import { createAgent } from 'langchain';
+import { getMcpTools } from './mcpService.ts';
 
 export type GuardrailResult = {
     safe: boolean;
@@ -45,9 +46,10 @@ export class OpenRouterService {
     ): Promise<string> {
 
         if (!this.fsAgent) {
+            const tools = await getMcpTools();
             this.fsAgent = createAgent({
                 model: this.llmClient,
-                tools: [],
+                tools,
             });
         }
 
