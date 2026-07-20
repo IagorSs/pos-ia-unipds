@@ -24,13 +24,6 @@ export type ModelConfig = {
   httpReferer: string;
   xTitle: string;
 
-  provider: {
-    sort: {
-      by: string;
-      partition: string;
-    };
-  };
-
   models: string[];
   temperature: number;
   maxTokens: number;
@@ -40,22 +33,13 @@ export type ModelConfig = {
 
 export const config: ModelConfig = {
   apiKey: process.env.OPENROUTER_API_KEY!,
-  httpReferer: '',
-  xTitle: 'IA Devs - Guardrails'!,
+  httpReferer: process.env.OPENROUTER_HTTP_REFERER!,
+  xTitle: process.env.OPENROUTER_X_TITLE!,
   models: [
-    // 'qwen/qwen-2.5-7b-instruct',
-    // 'qwen/qwen3-coder-next',
-    // 'upstage/solar-pro-3:free',
-    'qwen/qwen-2.5-7b-instruct',// unsafe!
+    process.env.OPENROUTER_TEXT_MODEL!,
   ],
 
-  guardrailsModel: 'openai/gpt-oss-safeguard-20b',
-  provider: {
-    sort: {
-      by: 'price',
-      partition: 'none',
-    },
-  },
+  guardrailsModel: process.env.OPENROUTER_SAFEGUARD_MODEL!,
   temperature: 0.7,
   maxTokens: 1000,
 };

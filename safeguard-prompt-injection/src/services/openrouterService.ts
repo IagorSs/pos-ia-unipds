@@ -35,7 +35,6 @@ export class OpenRouterService {
             },
             modelKwargs: {
                 models: this.config.models,
-                provider: this.config.provider,
             },
         });
     }
