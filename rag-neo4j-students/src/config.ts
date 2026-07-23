@@ -13,9 +13,9 @@ export const config = {
   },
   temperature: 0.7,
   neo4j: {
-    uri: "neo4j://localhost:7687",
-    username: "neo4j",
-    password: "password",
+    uri: `neo4j://${process.env.GRAPH_DB_SERVICE}:7687`,
+    username: process.env.GRAPH_DB_USER,
+    password: process.env.GRAPH_DB_PASS,
   },
   maxCorrectionAttempts: 1,
   maxSubQuestions: 3,
