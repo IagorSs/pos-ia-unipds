@@ -3,7 +3,7 @@ export const config = {
   httpReferer: '',
   xTitle: 'IA Devs - Sales Analytics Reporter',
   models: [
-    'arcee-ai/trinity-large-preview:free',
+    process.env.LANGSMITH_NATURAL_LANG_AI,
   ],
   provider: {
     sort: {
