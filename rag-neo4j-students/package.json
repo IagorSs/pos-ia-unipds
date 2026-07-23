@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^9.4.0",
+    "@langchain/langgraph-cli": "^1.4.3",
     "@types/node": "^24.10.12",
     "ntl": "^5.1.0"
   },
