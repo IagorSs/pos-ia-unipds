@@ -64,7 +64,7 @@ function handleMultiStepProgression(state: GraphState, results: any[]) {
   console.log(`✅ Step ${multiStepState.currentStep}/${totalSteps} completed`);
 
   if(hasMoreSteps({...state,...multiStepState})) {
-    console.log(`⏩ Moving to step ${nextStep}...`);
+    console.log(`⏩ Moving to step ${nextStep + 1}...`);
     return multiStepState
   }
 
