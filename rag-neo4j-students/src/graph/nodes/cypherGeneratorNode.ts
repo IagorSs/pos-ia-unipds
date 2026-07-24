@@ -15,7 +15,7 @@ function getCurrentStepQuestion(state: GraphState) {
 
   return {
     question: state.subQuestions[state.currentStep],
-    stepNumber: state.currentStep + 1
+    stepNumber: state.currentStep
   }
 }
 
@@ -32,7 +32,7 @@ export function createCypherGeneratorNode(
 
       if(stepInfo) {
         const totalSteps = state.subQuestions!.length;
-        console.log(`🤖 Generating Cypher query for step ${stepInfo.stepNumber} / ${totalSteps}`);
+        console.log(`🤖 Generating Cypher query for step ${stepInfo.stepNumber + 1} / ${totalSteps}`);
       } else {
         console.log('🤖 Generating Cypher query...');
       }
