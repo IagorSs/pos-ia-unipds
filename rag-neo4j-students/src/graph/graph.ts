@@ -43,7 +43,7 @@ const SalesStateAnnotation = z.object({
   subQuestions: z.array(z.string()).optional(),
   currentStep: z.number().optional(),
   subQueries: z.array(z.string()).optional(),
-  subResults: z.array(z.array(z.any())).optional(),
+  subResults: z.array(z.any()).optional(),
 
   // Response generation
   answer: z.string().optional(),
