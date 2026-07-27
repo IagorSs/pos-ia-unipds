@@ -126,7 +126,7 @@ export function createAnalyticalResponseNode(llmClient: OpenRouterService) {
   return async (state: GraphState): Promise<Partial<GraphState>> => {
     try {
 
-      if(!state.error) {
+      if(state.error) {
         return await handleErrorResponse(state, llmClient);
       }
 
