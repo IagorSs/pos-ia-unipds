@@ -1,0 +1,9 @@
+name: pos-grad-env
+
+services:
+  code:
+    container_name: pos-grad-env_code
+    image: node:24
+    command: sleep infinity
+    volumes:
+      - .:/code
