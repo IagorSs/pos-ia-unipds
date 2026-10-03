@@ -1,0 +1,11 @@
+name: legacy-api-as-mcp_local
+
+services:
+  mcp-inspector:
+    image: ghcr.io/modelcontextprotocol/inspector
+    ports:
+      - "6274:6274"
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ["npm", "start"]
