@@ -7,3 +7,5 @@ services:
     command: sleep infinity
     volumes:
       - .:/code
+    working_dir: /code
+
